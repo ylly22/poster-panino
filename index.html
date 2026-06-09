@@ -161,8 +161,8 @@
     }
 
     function isOnDropZone(item) {
-      if (!svgRoot) return false;
-      var dropBounds = svgRoot.bounds;
+      if (!dropZone) return false;
+      var dropBounds = dropZone.bounds.expand(0, 600);
       var ingBounds = item.bounds;
       return ingBounds.intersects(dropBounds);
     }
