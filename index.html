@@ -69,8 +69,58 @@
       });
     }
 
+    var originalPositions = {};
+
     function setupDrag(item, name) {
-      // Will be defined in Task 4
+      originalPositions[name] = {
+        x: item.position.x,
+        y: item.position.y
+      };
+
+      var isPlaced = false;
+
+      item.onMouseDown = function(event) {
+        item.bringToFront();
+      };
+
+      item.onMouseDrag = function(event) {
+        item.position.x += event.delta.x;
+        item.position.y += event.delta.y;
+      };
+
+      item.onMouseUp = function(event) {
+        if (isOnDropZone(item)) {
+          if (!isPlaced) {
+            placeIngredient(item);
+            isPlaced = true;
+          }
+        } else {
+          if (isPlaced && item.name !== 'Panino_superiore') {
+            // Stay placed
+          } else {
+            returnToOriginal(item, name);
+            isPlaced = false;
+          }
+        }
+      };
+    }
+
+    function isOnDropZone(item) {
+      if (!dropZone) return false;
+      var ingBounds = item.bounds;
+      var dropBounds = dropZone.bounds;
+      return ingBounds.intersects(dropBounds);
+    }
+
+    function placeIngredient(item) {
+      item.scale(1.8);
+    }
+
+    function returnToOriginal(item, name) {
+      var orig = originalPositions[name];
+      if (!orig) return;
+      item.position.x = orig.x;
+      item.position.y = orig.y;
     }
   </script>
 </body>
