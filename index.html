@@ -120,7 +120,11 @@
       item.onMouseUp = function(event) {
         if (isOnDropZone(item)) {
           if (!isPlaced) {
-            placeIngredient(item);
+            if (name === 'Panino_superiore') {
+              placeTopBun(item, name);
+            } else {
+              placeIngredient(item);
+            }
             isPlaced = true;
             if (name === 'Panino_superiore') {
               showBuonAppetito();
@@ -158,12 +162,21 @@
 
     function isOnDropZone(item) {
       if (!dropZone) return false;
+      var dropBounds = dropZone.bounds.expand(200, 200);
       var ingBounds = item.bounds;
-      var dropBounds = dropZone.bounds;
       return ingBounds.intersects(dropBounds);
     }
 
     function placeIngredient(item) {
+      item.scale(1.8);
+    }
+
+    function placeTopBun(item, name) {
+      var orig = originalPositions[name];
+      if (orig) {
+        item.position.x = orig.x;
+        item.position.y = orig.y;
+      }
       item.scale(1.8);
     }
 
