@@ -35,6 +35,18 @@
 
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
+
+    fetch('poster.svg')
+      .then(function(response) { return response.text(); })
+      .then(function(svgString) {
+        var svg = paper.project.importSVG(svgString, { expandShapes: true });
+        svg.position = paper.view.center;
+        initIngredients(svg);
+      });
+
+    function initIngredients(root) {
+      // Will be defined in Task 3
+    }
   </script>
 </body>
 </html>
