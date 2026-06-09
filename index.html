@@ -81,6 +81,11 @@
 
       item.onMouseDown = function(event) {
         item.bringToFront();
+
+        if (name === 'Panino_superiore' && isPlaced) {
+          hideBuonAppetito();
+          isPlaced = false;
+        }
       };
 
       item.onMouseDrag = function(event) {
@@ -93,16 +98,38 @@
           if (!isPlaced) {
             placeIngredient(item);
             isPlaced = true;
+            if (name === 'Panino_superiore') {
+              showBuonAppetito();
+            }
           }
         } else {
-          if (isPlaced && item.name !== 'Panino_superiore') {
-            // Stay placed
-          } else {
+          if (name === 'Panino_superiore') {
             returnToOriginal(item, name);
             isPlaced = false;
+            hideBuonAppetito();
+          } else if (isPlaced) {
+            // Other ingredients stay placed
+          } else {
+            returnToOriginal(item, name);
           }
         }
       };
+    }
+
+    function showBuonAppetito() {
+      if (!texts) return;
+      var buonApp = texts.children['buon-appetito'];
+      var creaPanino = texts.children['crea-il-tuo-panino'];
+      if (buonApp) buonApp.opacity = 1;
+      if (creaPanino) creaPanino.opacity = 0;
+    }
+
+    function hideBuonAppetito() {
+      if (!texts) return;
+      var buonApp = texts.children['buon-appetito'];
+      var creaPanino = texts.children['crea-il-tuo-panino'];
+      if (buonApp) buonApp.opacity = 0;
+      if (creaPanino) creaPanino.opacity = 1;
     }
 
     function isOnDropZone(item) {
