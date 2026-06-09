@@ -120,11 +120,7 @@
       item.onMouseUp = function(event) {
         if (isOnDropZone(item)) {
           if (!isPlaced) {
-            if (name === 'Panino_superiore') {
-              placeTopBun(item, name);
-            } else {
-              placeIngredient(item);
-            }
+            placeIngredient(item);
             isPlaced = true;
             if (name === 'Panino_superiore') {
               showBuonAppetito();
@@ -168,15 +164,6 @@
     }
 
     function placeIngredient(item) {
-      item.scale(1.8);
-    }
-
-    function placeTopBun(item, name) {
-      var orig = originalPositions[name];
-      if (orig) {
-        item.position.x = orig.x;
-        item.position.y = orig.y;
-      }
       item.scale(1.8);
     }
 
