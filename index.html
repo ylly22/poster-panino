@@ -11,10 +11,10 @@
   </style>
 </head>
 <body>
-  <canvas id="canvas" resize></canvas>
+  <canvas id="canvas"></canvas>
   <script src="https://unpkg.com/paper@0.12.17/dist/paper-full.min.js"></script>
   <script>
-    paper.setup('canvas');
+    var svgRoot;
 
     function resizeCanvas() {
       var canvas = document.getElementById('canvas');
@@ -22,25 +22,48 @@
       var h = window.innerHeight;
       var svgAspect = 841.89 / 1190.55;
       var winAspect = w / h;
+      var cw, ch;
       if (winAspect > svgAspect) {
-        canvas.style.height = h + 'px';
-        canvas.style.width = (h * svgAspect) + 'px';
+        ch = h;
+        cw = h * svgAspect;
       } else {
-        canvas.style.width = w + 'px';
-        canvas.style.height = (w / svgAspect) + 'px';
+        cw = w;
+        ch = w / svgAspect;
       }
-      canvas.width = parseInt(canvas.style.width);
-      canvas.height = parseInt(canvas.style.height);
+      cw = Math.round(cw);
+      ch = Math.round(ch);
+      canvas.style.width = cw + 'px';
+      canvas.style.height = ch + 'px';
+      canvas.width = cw;
+      canvas.height = ch;
     }
 
-    window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
+    paper.setup('canvas');
+
+    window.addEventListener('resize', function() {
+      resizeCanvas();
+      if (paper.view) {
+        paper.view.viewSize = new paper.Size(canvas.width, canvas.height);
+      }
+      if (svgRoot) fitViewToSvg();
+    });
+
+    function fitViewToSvg() {
+      var scale = Math.min(
+        paper.view.viewSize.width / 841.89,
+        paper.view.viewSize.height / 1190.55
+      );
+      paper.view.zoom = scale;
+      paper.view.center = new paper.Point(841.89 / 2, 1190.55 / 2);
+    }
 
     fetch('poster.svg')
       .then(function(response) { return response.text(); })
       .then(function(svgString) {
         var svg = paper.project.importSVG(svgString, { expandShapes: true });
-        svg.position = paper.view.center;
+        svgRoot = svg;
+        fitViewToSvg();
         initIngredients(svg);
       });
 
