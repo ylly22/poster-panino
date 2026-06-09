@@ -7,7 +7,7 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { width: 100%; height: 100%; overflow: hidden; background: #0f6846; }
-    canvas { display: block; margin: 0 auto; }
+    canvas { display: block; margin: 0 auto; touch-action: none; }
   </style>
 </head>
 <body>
@@ -80,6 +80,7 @@
       var isPlaced = false;
 
       item.onMouseDown = function(event) {
+        if (isPlaced && name !== 'Panino_superiore') return;
         item.bringToFront();
 
         if (name === 'Panino_superiore' && isPlaced) {
@@ -146,8 +147,20 @@
     function returnToOriginal(item, name) {
       var orig = originalPositions[name];
       if (!orig) return;
-      item.position.x = orig.x;
-      item.position.y = orig.y;
+      var startX = item.position.x;
+      var startY = item.position.y;
+      var duration = 200;
+      var startTime = null;
+      function animate(timestamp) {
+        if (!startTime) startTime = timestamp;
+        var elapsed = timestamp - startTime;
+        var t = Math.min(elapsed / duration, 1);
+        var ease = 1 - Math.pow(1 - t, 3);
+        item.position.x = startX + (orig.x - startX) * ease;
+        item.position.y = startY + (orig.y - startY) * ease;
+        if (t < 1) requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
     }
   </script>
 </body>
