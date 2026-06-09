@@ -44,8 +44,33 @@
         initIngredients(svg);
       });
 
+    var DRAGGABLE_IDS = ['cipolla', 'Insalata', 'Hamburger', 'Bacon', 'Formaggio', 'Panino_superiore', 'pomodoro'];
+    var dropZone;
+    var draggableItems = [];
+    var texts;
+
     function initIngredients(root) {
-      // Will be defined in Task 3
+      root.children.forEach(function(child) {
+        if (child.name === 'pane_base') {
+          dropZone = child;
+          dropZone.locked = true;
+        } else if (child.name === 'Buon_appetito') {
+          texts = child;
+          var buonApp = texts.children['buon-appetito'];
+          var creaPanino = texts.children['crea-il-tuo-panino'];
+          if (buonApp) buonApp.opacity = 0;
+          if (creaPanino) creaPanino.opacity = 1;
+        } else if (child.name === 'Base') {
+          child.locked = true;
+        } else if (DRAGGABLE_IDS.indexOf(child.name) !== -1) {
+          draggableItems.push(child);
+          setupDrag(child, child.name);
+        }
+      });
+    }
+
+    function setupDrag(item, name) {
+      // Will be defined in Task 4
     }
   </script>
 </body>
