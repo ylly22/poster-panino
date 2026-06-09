@@ -49,6 +49,13 @@
       if (svgRoot) fitViewToSvg();
     });
 
+    document.addEventListener('keydown', function(event) {
+      if (event.code === 'Space') {
+        event.preventDefault();
+        location.reload();
+      }
+    });
+
     function fitViewToSvg() {
       var scale = Math.min(
         paper.view.viewSize.width / 841.89,
