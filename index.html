@@ -6,13 +6,14 @@
   <title>Panino Interattivo</title>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background: #0f6846; }
+    html, body { width: 100%; height: 100%; overflow: hidden; background: #E07A5F; }
     canvas { display: block; margin: 0 auto; touch-action: none; }
   </style>
 </head>
 <body>
   <canvas id="canvas"></canvas>
   <script src="https://unpkg.com/paper@0.12.17/dist/paper-full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
   <script>
     var svgRoot;
 
@@ -153,6 +154,11 @@
       var creaPanino = texts.children['crea-il-tuo-panino'];
       if (buonApp) buonApp.opacity = 1;
       if (creaPanino) creaPanino.opacity = 0;
+      confetti({
+        particleCount: 150,
+        spread: 100,
+        origin: { y: 0.6 }
+      });
     }
 
     function hideBuonAppetito() {
