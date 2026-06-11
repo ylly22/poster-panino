@@ -224,7 +224,7 @@
       })).then(function(svgStrings) {
         svgStrings.forEach(function(str) {
           var template = paper.project.importSVG(str, { expandShapes: true });
-          for (var i = 0; i < 3; i++) {
+          for (var i = 0; i < 8; i++) {
             var copy = template.clone();
             var x = 60 + Math.random() * 720;
             var y = -100 + Math.random() * 200;
@@ -233,7 +233,7 @@
             copy.opacity = 1;
             copy.locked = true;
             copy.data = {
-              speed: 30 + Math.random() * 50,
+              speed: 80 + Math.random() * 120,
               drift: (Math.random() - 0.5) * 30,
               rot: (Math.random() - 0.5) * 80
             };
