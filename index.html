@@ -303,7 +303,7 @@
           copy.position.x = Math.max(halfW + margin, Math.min(posterWidth - halfW - margin, copy.position.x));
 
           copy.data = {
-            speed: 50 + Math.random() * 150,
+            speed: 150 + Math.random() * 250,
             drift: (Math.random() - 0.5) * 60,
             rot: (Math.random() - 0.5) * 90
           };
@@ -346,7 +346,7 @@
             item.position.x = 30 + Math.random() * 780;
             var halfW = item.bounds.width / 2;
             item.position.x = Math.max(halfW + 20, Math.min(841.89 - halfW - 20, item.position.x));
-            d.speed = 50 + Math.random() * 150;
+            d.speed = 150 + Math.random() * 250;
             d.drift = (Math.random() - 0.5) * 60;
           }
         }
