@@ -227,20 +227,15 @@
           for (var i = 0; i < 3; i++) {
             var copy = template.clone();
             var x = 60 + Math.random() * 720;
-            var y = 60 + Math.random() * 1070;
+            var y = -100 + Math.random() * 200;
             copy.position = new paper.Point(x, y);
-            copy.scale(0.3 + Math.random() * 0.3);
-            copy.opacity = 0.35 + Math.random() * 0.2;
+            copy.scale(0.4 + Math.random() * 0.3);
+            copy.opacity = 1;
             copy.locked = true;
             copy.data = {
-              origX: x,
-              origY: y,
-              phase: Math.random() * Math.PI * 2,
-              speedX: 0.2 + Math.random() * 0.3,
-              speedY: 0.3 + Math.random() * 0.3,
-              ampX: 10 + Math.random() * 15,
-              ampY: 8 + Math.random() * 12,
-              rotSpeed: (Math.random() - 0.5) * 0.3
+              speed: 30 + Math.random() * 50,
+              drift: (Math.random() - 0.5) * 30,
+              rot: (Math.random() - 0.5) * 80
             };
             if (svgRoot) {
               var baseIndex = -1;
@@ -263,12 +258,17 @@
 
     function startFloatingAnimation() {
       paper.view.onFrame = function(event) {
+        var dt = event.delta;
         for (var i = 0; i < floatingItems.length; i++) {
           var item = floatingItems[i];
           var d = item.data;
-          item.position.x = d.origX + Math.sin(event.time * d.speedX + d.phase) * d.ampX;
-          item.position.y = d.origY + Math.cos(event.time * d.speedY + d.phase) * d.ampY;
-          item.rotation += d.rotSpeed;
+          item.position.y += d.speed * dt;
+          item.position.x += d.drift * dt;
+          item.rotation += d.rot * dt;
+          if (item.position.y > 1240) {
+            item.position.y = -100;
+            item.position.x = 60 + Math.random() * 720;
+          }
         }
       };
     }
