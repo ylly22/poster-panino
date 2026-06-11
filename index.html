@@ -222,34 +222,51 @@
       Promise.all(files.map(function(f) {
         return fetch(f).then(function(r) { return r.text(); });
       })).then(function(svgStrings) {
-        svgStrings.forEach(function(str) {
-          var template = paper.project.importSVG(str, { expandShapes: true });
-          for (var i = 0; i < 8; i++) {
-            var copy = template.clone();
-            var x = 60 + Math.random() * 720;
-            var y = -100 + Math.random() * 200;
-            copy.position = new paper.Point(x, y);
-            copy.scale(0.4 + Math.random() * 0.3);
-            copy.opacity = 1;
-            copy.locked = true;
-            copy.data = {
-              speed: 80 + Math.random() * 120,
-              drift: (Math.random() - 0.5) * 30,
-              rot: (Math.random() - 0.5) * 80
-            };
-            if (svgRoot) {
-              var baseIndex = -1;
-              svgRoot.children.forEach(function(c, j) {
-                if (c.name === 'Base') baseIndex = j;
-              });
-              if (baseIndex >= 0) {
-                svgRoot.insertChild(baseIndex + 1, copy);
-              }
-            }
-            floatingItems.push(copy);
-          }
-          template.remove();
+        var templates = svgStrings.map(function(str) {
+          return paper.project.importSVG(str, { expandShapes: true });
         });
+
+        var bottlesPerType = 8;
+        var totalBottles = bottlesPerType * templates.length;
+        var verticalSpan = 1600;
+        var spacing = verticalSpan / totalBottles;
+
+        var posterWidth = 841.89;
+        var margin = 20;
+
+        for (var i = 0; i < totalBottles; i++) {
+          var typeIndex = i % templates.length;
+          var copy = templates[typeIndex].clone();
+          var x = 30 + Math.random() * 780;
+          var y = -150 - i * spacing + (Math.random() - 0.5) * spacing * 1.2;
+
+          copy.position = new paper.Point(x, y);
+          copy.scale(0.2 + Math.random() * 0.2);
+          copy.opacity = 1;
+          copy.locked = true;
+
+          // Keep fully inside poster horizontally
+          var halfW = copy.bounds.width / 2;
+          copy.position.x = Math.max(halfW + margin, Math.min(posterWidth - halfW - margin, copy.position.x));
+
+          copy.data = {
+            speed: 50 + Math.random() * 150,
+            drift: (Math.random() - 0.5) * 60,
+            rot: (Math.random() - 0.5) * 90
+          };
+          if (svgRoot) {
+            var baseIndex = -1;
+            svgRoot.children.forEach(function(c, j) {
+              if (c.name === 'Base') baseIndex = j;
+            });
+            if (baseIndex >= 0) {
+              svgRoot.insertChild(baseIndex + 1, copy);
+            }
+          }
+          floatingItems.push(copy);
+        }
+
+        templates.forEach(function(t) { t.remove(); });
         startFloatingAnimation();
       }).catch(function(err) {
         console.log('Could not load condiments:', err);
@@ -265,9 +282,19 @@
           item.position.y += d.speed * dt;
           item.position.x += d.drift * dt;
           item.rotation += d.rot * dt;
-          if (item.position.y > 1240) {
-            item.position.y = -100;
-            item.position.x = 60 + Math.random() * 720;
+
+          // Keep fully inside poster horizontally
+          var halfW = item.bounds.width / 2;
+          var margin = 20;
+          item.position.x = Math.max(halfW + margin, Math.min(841.89 - halfW - margin, item.position.x));
+
+          if (item.position.y > 1300) {
+            item.position.y = -150 - Math.random() * 600;
+            item.position.x = 30 + Math.random() * 780;
+            var halfW = item.bounds.width / 2;
+            item.position.x = Math.max(halfW + 20, Math.min(841.89 - halfW - 20, item.position.x));
+            d.speed = 50 + Math.random() * 150;
+            d.drift = (Math.random() - 0.5) * 60;
           }
         }
       };
