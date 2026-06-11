@@ -59,6 +59,7 @@
         svgRoot = svg;
         fitViewToSvg();
         initIngredients(svg);
+        loadCondiments();
       });
 
     var DRAGGABLE_IDS = ['cipolla', 'Insalata', 'Hamburger', 'Bacon', 'Formaggio', 'Panino_superiore', 'pomodoro'];
@@ -212,6 +213,64 @@
         if (t < 1) requestAnimationFrame(animate);
       }
       requestAnimationFrame(animate);
+    }
+
+    var floatingItems = [];
+
+    function loadCondiments() {
+      var files = ['ketchup.svg', 'mayo.svg', 'senape.svg'];
+      Promise.all(files.map(function(f) {
+        return fetch(f).then(function(r) { return r.text(); });
+      })).then(function(svgStrings) {
+        svgStrings.forEach(function(str) {
+          var template = paper.project.importSVG(str, { expandShapes: true });
+          for (var i = 0; i < 3; i++) {
+            var copy = template.clone();
+            var x = 60 + Math.random() * 720;
+            var y = 60 + Math.random() * 1070;
+            copy.position = new paper.Point(x, y);
+            copy.scale(0.3 + Math.random() * 0.3);
+            copy.opacity = 0.35 + Math.random() * 0.2;
+            copy.locked = true;
+            copy.data = {
+              origX: x,
+              origY: y,
+              phase: Math.random() * Math.PI * 2,
+              speedX: 0.2 + Math.random() * 0.3,
+              speedY: 0.3 + Math.random() * 0.3,
+              ampX: 10 + Math.random() * 15,
+              ampY: 8 + Math.random() * 12,
+              rotSpeed: (Math.random() - 0.5) * 0.3
+            };
+            if (svgRoot) {
+              var baseIndex = -1;
+              svgRoot.children.forEach(function(c, j) {
+                if (c.name === 'Base') baseIndex = j;
+              });
+              if (baseIndex >= 0) {
+                svgRoot.insertChild(baseIndex + 1, copy);
+              }
+            }
+            floatingItems.push(copy);
+          }
+          template.remove();
+        });
+        startFloatingAnimation();
+      }).catch(function(err) {
+        console.log('Could not load condiments:', err);
+      });
+    }
+
+    function startFloatingAnimation() {
+      paper.view.onFrame = function(event) {
+        for (var i = 0; i < floatingItems.length; i++) {
+          var item = floatingItems[i];
+          var d = item.data;
+          item.position.x = d.origX + Math.sin(event.time * d.speedX + d.phase) * d.ampX;
+          item.position.y = d.origY + Math.cos(event.time * d.speedY + d.phase) * d.ampY;
+          item.rotation += d.rotSpeed;
+        }
+      };
     }
   </script>
 </body>
