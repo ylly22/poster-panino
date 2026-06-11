@@ -7,35 +7,22 @@
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     html, body { width: 100%; height: 100%; overflow: hidden; background: #0f6846; }
-    canvas { display: block; margin: 0 auto; touch-action: none; }
+    canvas { display: block; touch-action: none; }
   </style>
 </head>
 <body>
   <canvas id="canvas"></canvas>
   <script src="https://unpkg.com/paper@0.12.17/dist/paper-full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1"></script>
   <script>
     var svgRoot;
 
     function resizeCanvas() {
       var canvas = document.getElementById('canvas');
-      var w = window.innerWidth;
-      var h = window.innerHeight;
-      var svgAspect = 841.89 / 1190.55;
-      var winAspect = w / h;
-      var cw, ch;
-      if (winAspect > svgAspect) {
-        ch = h;
-        cw = h * svgAspect;
-      } else {
-        cw = w;
-        ch = w / svgAspect;
-      }
-      cw = Math.round(cw);
-      ch = Math.round(ch);
-      canvas.style.width = cw + 'px';
-      canvas.style.height = ch + 'px';
-      canvas.width = cw;
-      canvas.height = ch;
+      canvas.style.width = '100vw';
+      canvas.style.height = '100vh';
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     }
 
     resizeCanvas();
@@ -153,6 +140,40 @@
       var creaPanino = texts.children['crea-il-tuo-panino'];
       if (buonApp) buonApp.opacity = 1;
       if (creaPanino) creaPanino.opacity = 0;
+      playTrumpet();
+      confetti({
+        particleCount: 300,
+        spread: 120,
+        origin: { y: 0.6 }
+      });
+      confetti({
+        particleCount: 200,
+        spread: 100,
+        origin: { y: 0.6, x: 0.3 }
+      });
+      confetti({
+        particleCount: 200,
+        spread: 100,
+        origin: { y: 0.6, x: 0.7 }
+      });
+    }
+
+    function playTrumpet() {
+      var ctx = new (window.AudioContext || window.webkitAudioContext)();
+      var notes = [523.25, 659.25, 783.99, 1046.5];
+      notes.forEach(function(freq, i) {
+        var osc = ctx.createOscillator();
+        var gain = ctx.createGain();
+        osc.type = 'sawtooth';
+        osc.frequency.value = freq;
+        gain.gain.setValueAtTime(0, ctx.currentTime + i * 0.12);
+        gain.gain.linearRampToValueAtTime(0.3, ctx.currentTime + i * 0.12 + 0.02);
+        gain.gain.linearRampToValueAtTime(0, ctx.currentTime + i * 0.12 + 0.15);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(ctx.currentTime + i * 0.12);
+        osc.stop(ctx.currentTime + i * 0.12 + 0.15);
+      });
     }
 
     function hideBuonAppetito() {
